@@ -17,9 +17,11 @@
 input {
   @apply p-2 rounded-md border border-gray-300;
 }
+/*
 body {
   @apply bg-gradient-to-tr from-blue-600 to-teal-700;
 }
+*/
 .signin-box button {
   @apply mt-4 bg-teal-600 text-white px-6 py-2 rounded-md;
 }
