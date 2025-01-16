@@ -57,6 +57,7 @@ export default function SignIn() {
 
                 <button className="mt-4" onClick={handleSignIn}>
                     Sign In
+                    <i className="fa fa-sign-in-alt ml-2"></i>
                 </button>
             </div>
         </div>
