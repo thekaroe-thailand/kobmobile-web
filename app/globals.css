@@ -34,4 +34,30 @@ body {
   @apply text-2xl font-bold mb-5 pt-0 pb-3 border-b-2 border-teal-600 text-teal-600;
 }
 
+.table {
+  @apply w-full;
+}
 
+.table thead {
+  @apply bg-teal-600 text-white;
+}
+
+.table thead th {
+  @apply p-3 text-left;
+}
+
+.table tbody tr {
+  @apply border-b border-gray-300;
+}
+
+.table tbody td {
+  @apply p-3 text-left bg-gray-100;
+}
+
+.btn-edit {
+  @apply bg-blue-600 text-white px-3 py-2 rounded-md;
+}
+
+.btn-delete {
+  @apply bg-red-600 text-white px-3 py-2 rounded-md;
+}
