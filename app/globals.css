@@ -15,7 +15,7 @@
   @apply mb-5;
 }
 input {
-  @apply p-2 rounded-md border border-gray-300 w-full;
+  @apply p-2 rounded-md border border-gray-600 w-full;
 }
 
 body {
