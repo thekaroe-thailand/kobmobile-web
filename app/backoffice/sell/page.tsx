@@ -8,6 +8,9 @@ import Swal from "sweetalert2";
 export default function Page() {
     const [serial, setSerial] = useState('');
     const [price, setPrice] = useState(0);
+    const [sells, setSells] = useState([]); // ข้อมูลทั้งหมด
+    const [id, setId] = useState(0); // ข้อมูล id เอาไว้แก้ไข หรือลบรายการ
+    const [totalAmount, setTotalAmount] = useState(0);
 
     const handleSave = async () => {
         try {
@@ -18,6 +21,33 @@ export default function Page() {
             await axios.post(`${config.apiUrl}/sell/create`, payload);
             fetchData();
         } catch (error: any) {
+            if (error.response.status === 400) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่พบรายการสินค้า',
+                    text: 'ไม่พบรายการสินค้า หรือไม่มีในสต้อก'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: error.message
+                });
+            }
+        }
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${config.apiUrl}/sell/list`);
+            setSells(response.data);
+
+            let total = 0;
+            for (let i = 0; i < response.data.length; i++) {
+                total += response.data[i].price;
+            }
+            setTotalAmount(total);
+        } catch (error: any) {
             Swal.fire({
                 icon: 'error',
                 title: 'เกิดข้อผิดพลาด',
@@ -26,13 +56,55 @@ export default function Page() {
         }
     }
 
-    const fetchData = async () => {
-
-    }
-
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleDelete = async (id: number) => {
+        try {
+            const button = await Swal.fire({
+                text: 'ลบรายการนี้หรือไม่?',
+                title: 'คุณต้องการลบรายการนี้หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: true,
+            });
+
+            if (button.isConfirmed) {
+                await axios.delete(`${config.apiUrl}/sell/remove/${id}`);
+                fetchData();
+            }
+        } catch (error: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: error.message
+            });
+        }
+    }
+
+    const handleConfirm = async () => {
+        try {
+            const button = await Swal.fire({
+                text: 'ยืนยันการขายหรือไม่?',
+                title: 'ยืนยันการขาย',
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: true,
+            });
+
+            if (button.isConfirmed) {
+                await axios.get(`${config.apiUrl}/sell/confirm`);
+                fetchData();
+            }
+        } catch (error: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: error.message
+            });
+        }
+    }
 
     return (
         <div>
@@ -56,6 +128,49 @@ export default function Page() {
                     </button>
                 </div>
             </div>
+
+            <table className="table mt-5">
+                <thead>
+                    <tr>
+                        <th className="text-left">serial</th>
+                        <th className="text-left">รายการสินค้า</th>
+                        <th className="text-right pr-0">ราคา</th>
+                        <th className="w-[50px]"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sells.map((item: any) => (
+                        <tr key={item.id}>
+                            <td>{item.product.serial}</td>
+                            <td>{item.product.name}</td>
+                            <td className="text-right">{item.price.toLocaleString()}</td>
+                            <td className="text-center">
+                                <button className="btn-delete" onClick={() => handleDelete(item.id)}>
+                                    <i className="fa-solid fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {sells.length > 0 && (
+                <>
+                    <div className="mt-5 flex justify-between">
+                        <div>ยอดรวมทั้งหมด</div>
+                        <div className="text-right font-bold bg-gray-300 px-4 py-2 rounded-md">
+                            {totalAmount.toLocaleString()}
+                        </div>
+                    </div>
+
+                    <div className="mt-5 text-center">
+                        <button className="btn" onClick={handleConfirm}>
+                            <i className="fa-solid fa-check mr-2"></i>
+                            ยืนยันการขาย
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

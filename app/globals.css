@@ -43,7 +43,7 @@ body {
 }
 
 .table thead th {
-  @apply p-3 text-left;
+  @apply p-3;
 }
 
 .table tbody tr {
@@ -51,7 +51,7 @@ body {
 }
 
 .table tbody td {
-  @apply p-3 text-left bg-gray-100;
+  @apply p-3 bg-gray-100;
 }
 
 .btn-edit {
