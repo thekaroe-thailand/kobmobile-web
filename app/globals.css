@@ -18,6 +18,10 @@ input {
   @apply p-2 rounded-md border border-gray-600 w-full;
 }
 
+.form-control {
+  @apply p-2 rounded-md border border-gray-600 w-full;
+}
+
 body {
   @apply bg-gradient-to-tr from-blue-600 to-teal-700;
 }
