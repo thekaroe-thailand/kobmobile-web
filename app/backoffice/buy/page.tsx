@@ -21,14 +21,23 @@ export default function Page() {
     const [id, setId] = useState(0); // id เอาไว้แก้ไขรายการ
     const [qty, setQty] = useState(1); // จำนวนสินค้า
 
+    /*
+    pagination
+    */
+    const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [totalRows, setTotalRows] = useState(0);
+
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [page]);
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${config.apiUrl}/buy/list`);
-            setProducts(response.data);
+            const response = await axios.get(`${config.apiUrl}/buy/list/${page}`);
+            setProducts(response.data.products);
+            setTotalRows(response.data.totalRows);
+            setTotalPage(response.data.totalPages);
         } catch (err: any) {
             Swal.fire({
                 icon: 'error',
@@ -189,6 +198,34 @@ export default function Page() {
                         ))}
                     </tbody>
                 </table>
+
+                <div className="mt-5">
+                    <div>รายการทั้งหมด {totalRows} รายการ</div>
+                    <div>หน้า {page} จาก {totalPage}</div>
+                    <div className="flex gap-1">
+                        <button className="btn" onClick={() => setPage(1)}>
+                            <i className="fa-solid fa-caret-left mr-2"></i>
+                            หน้าแรก
+                        </button>
+                        <button className="btn" onClick={() => setPage(page - 1)}>
+                            <i className="fa-solid fa-caret-left"></i>
+                        </button>
+                        {Array.from({ length: totalPage }, (_, i) => (
+                            <button
+                                className={`btn ${(i + 1) === page ? 'btn-active' : ''}`}
+                                onClick={() => setPage(i + 1)} key={i}>
+                                {i + 1}
+                            </button>
+                        ))}
+                        <button className="btn" onClick={() => setPage(page + 1)}>
+                            <i className="fa-solid fa-caret-right"></i>
+                        </button>
+                        <button className="btn" onClick={() => setPage(totalPage)}>
+                            หน้าสุดท้าย
+                            <i className="fa-solid fa-caret-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <Modal title="เพิ่มรายการ" isOpen={isOpen} onClose={handleCloseModal}>

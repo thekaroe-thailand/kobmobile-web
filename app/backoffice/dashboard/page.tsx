@@ -14,15 +14,21 @@ export default function Page() {
     const [totalIncome, setTotalIncome] = useState(0)
     const [totalRepair, setTotalRepair] = useState(0)
     const [totalSale, setTotalSale] = useState(0)
+    const [listYears, setListYears] = useState<any[]>([])
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
 
     useEffect(() => {
+        const prevYear = new Date().getFullYear() - 5
+        const years = Array.from({ length: 6 }, (_, index) => prevYear + index)
+        setListYears(years)
+
         fetchData();
         renderChart();
     }, [])
 
     const fetchData = async () => {
         try {
-            const res = await axios.get(`${config.apiUrl}/sell/dashboard`)
+            const res = await axios.get(`${config.apiUrl}/sell/dashboard/${currentYear}`)
             setTotalIncome(res.data.totalIncome)
             setTotalRepair(res.data.totalRepair)
             setTotalSale(res.data.totalSale)
@@ -60,6 +66,29 @@ export default function Page() {
     return (
         <div>
             <h1 className="content-header">Dashboard</h1>
+
+            <div className="flex gap-4 mb-3 items-center">
+                <div className="w-[50px] text-right">เลือกปี</div>
+                <select
+                    value={currentYear}
+                    onChange={(e) => setCurrentYear(parseInt(e.target.value))}
+                    className="form-control"
+                    style={{ width: '200px' }}>
+                    {listYears.map((year, index) => (
+                        <option key={index} value={year}>
+                            {year}
+                        </option>
+                    ))}
+                </select>
+                <button className="btn flex items-center w-[161px]" onClick={() => {
+                    fetchData()
+                    renderChart()
+                }}>
+                    <i className="fa-solid fa-magnifying-glass mr-3"></i>
+                    แสดงรายการ
+                </button>
+            </div>
+
             <div className="flex gap-4">
                 {box('bg-purple-600', 'ยอดขายทั้งหมด', totalIncome.toLocaleString() + ' บาท')}
                 {box('bg-orange-500', 'งานรับซ่อม', totalRepair.toLocaleString() + ' งาน')}
